@@ -24,7 +24,7 @@ if parser.has_section('postgresql_settings'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres+psycopg2://{user}:{password}@{host}:{port}/{database}'.format(**db_config)
 else:
     raise Exception('DB Settings not found!!!!')
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
