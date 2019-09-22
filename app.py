@@ -1,10 +1,8 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
-import psycopg2
 
 from datetime import timedelta
-from configparser import ConfigParser
 
 # security.py we created. We are importing the handlers here for JWT
 from security import authenticate, identity
@@ -16,14 +14,6 @@ from resources.store import Store, StoreList
 app = Flask(__name__)
 app.secret_key = 'jose'
 
-parser = ConfigParser()
-parser.read('database.ini')
-if parser.has_section('postgresql_settings'):
-    params = parser.items('postgresql_settings')
-    db_config = {param[0]: param[1] for param in params}
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres+psycopg2://{user}:{password}@{host}:{port}/{database}'.format(**db_config)
-else:
-    raise Exception('DB Settings not found!!!!')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
