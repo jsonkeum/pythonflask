@@ -31,12 +31,6 @@ app.config['JWT_AUTH_USERNAME_KEY'] = 'username'
 api = Api(app)
 
 
-# creates database tables presumably based on model info
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 jwt = JWT(app, authenticate, identity)  # creates new end point /auth
 
 @jwt.auth_response_handler
