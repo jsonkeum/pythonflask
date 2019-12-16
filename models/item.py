@@ -8,7 +8,7 @@ class ItemModel(db.Model):
     price = db.Column(db.Float(precision=2))
     
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
-    store = db.relationship('StoreModel')
+ 
     
     def __init__(self, name, price, store_id):
         self.name = name
@@ -16,7 +16,12 @@ class ItemModel(db.Model):
         self.store_id = store_id
 
     def json(self):
-        return {'name': self.name, 'price': self.price}
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'store_id': self.store_id
+        }
     
     
     @classmethod

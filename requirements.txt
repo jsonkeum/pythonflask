@@ -1,6 +1,6 @@
 flask
+flask-jwt-extended
 flask-restful
-flask-jwt
 flask-sqlalchemy
-uwsgi
 psycopg2
+uwsgi
