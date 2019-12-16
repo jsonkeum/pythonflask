@@ -4,7 +4,8 @@ from flask_jwt_extended import JWTManager
 import psycopg2
 
 from datetime import timedelta
-from configparser import ConfigParser
+# from configparser import ConfigParser
+import os
 
 from blacklist import BLACKLIST
 from resources.user import (
