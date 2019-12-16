@@ -19,16 +19,18 @@ from resources.store import Store, StoreList
 
 app = Flask(__name__)
 app.secret_key = 'jose' # aka app.config['JWT_SECRET_KEY']
-
+"""
 parser = ConfigParser()
 parser.read('database.ini')
+
 if parser.has_section('postgresql_settings'):
     params = parser.items('postgresql_settings')
     db_config = {param[0]: param[1] for param in params}
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres+psycopg2://{user}:{password}@{host}:{port}/{database}'.format(**db_config)
 else:
     raise Exception('DB Settings not found!!!!')
-
+"""
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # allow libraries to raise their own exceptions
