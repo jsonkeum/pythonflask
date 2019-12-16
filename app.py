@@ -45,12 +45,6 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 api = Api(app)
 
 
-# creates database tables presumably based on model info
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 jwt = JWTManager(app)  # doesn't create /auth endpoint
 
 # claims is like setting some extra data about the user based on id
