@@ -25,7 +25,7 @@ class Item(Resource):
     )
     
     # name here is a keyword argument that is tied to the query param described in app.py [ api.add_resource(Item, '/item/<string:name>') ]
-    def get(self, name):
+    def get(self, name: str):
         item = ItemModel.find_by_name(name)
         if item:
             return item.json()
@@ -33,7 +33,7 @@ class Item(Resource):
 
 
     @fresh_jwt_required
-    def post(self, name):
+    def post(self, name: str):
         if ItemModel.find_by_name(name):
             return {'message': 'An item with the name "{}" already exists.'.format(name)}, 400
         
@@ -45,7 +45,7 @@ class Item(Resource):
     
     
     @jwt_required
-    def delete(self, name):
+    def delete(self, name: str):
         item = ItemModel.find_by_name(name)
         if item:
             item.delete_from_db()
@@ -54,7 +54,7 @@ class Item(Resource):
     
     
     @jwt_required
-    def put(self, name):
+    def put(self, name: str):
         data = Item.parser.parse_args()
         
         item = ItemModel.find_by_name(name)
@@ -70,5 +70,5 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        return {'items': [item.json() for item in ItemModel.query.all()]}, 200
+        return {'items': [item.json() for item in ItemModel.find_all()]}, 200
         

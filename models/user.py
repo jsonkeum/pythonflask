@@ -1,5 +1,8 @@
-import sqlite3
+from typing import Dict, Union
+
 from db import db
+
+UserJSON = Dict[str, Union[int, str]]
 
 class UserModel(db.Model):
     #db.Model is sql alchemy
@@ -13,29 +16,29 @@ class UserModel(db.Model):
     password = db.Column(db.String(80))
     
     # the id field of the model is auto generated as primary key
-    def __init__(self, username, password):
+    def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
     
-    def json(self):
+    def json(self) -> UserJSON:
         return {
             'id': self.id,
             'username': self.username
         }
     
-    def save_to_db(self):
+    def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()
     
-    def delete_from_db(self):
+    def delete_from_db(self) -> None:
         db.session.delete(self)
         db.session.commit()
     
     @classmethod
-    def find_by_username(cls, username):
+    def find_by_username(cls, username: str) -> "UserModel":
         # SQLAlchemy converts results into the model object
         return cls.query.filter_by(username=username).first()
     
     @classmethod
-    def find_by_id(cls, _id):
+    def find_by_id(cls, _id: int) -> "UserModel":
         return cls.query.filter_by(id=_id).first()
