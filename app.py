@@ -47,58 +47,10 @@ api = Api(app)
 
 jwt = JWTManager(app)  # doesn't create /auth endpoint
 
-# claims is like setting some extra data about the user based on id
-@jwt.user_claims_loader
-def add_claims_to_jwt(identity):
-    if identity == 1: # 1 is just a magic number here
-        return {'is_admin': True}
-    return {'is_admin': False}
-
 # if True, throws the revoked token stuff
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     return decrypted_token['jti'] in BLACKLIST
-
-
-# customize what message to send back to user when token's expired
-@jwt.expired_token_loader
-def expired_token_callback():
-    return {
-        'description': 'The token has expired.',
-        'error': 'token_expired'
-    }, 401
-
-# customize what message to send back to user when token's invalid
-@jwt.invalid_token_loader
-def invalid_token_callback(error):
-    return {
-        'description': 'Signature verification failed.',
-        'error': 'invalid_token'
-    }, 401
-
-# customize what message to send back to user when token's unauthorized
-@jwt.unauthorized_loader
-def unauthorized_token_callback():
-    return {
-        'description': 'Unauthorized signature.',
-        'error': 'unauthorized_token'
-    }, 401
-
-# customize what message to send back to user when token's stale
-@jwt.needs_fresh_token_loader
-def needs_fresh_token_callback():
-    return {
-        'description': 'Operation requires a sign in.',
-        'error': 'fresh_token'
-    }, 401
-
-# customize what message to send back to user when token's revoked
-@jwt.revoked_token_loader
-def revoked_token_callback():
-    return {
-        'description': 'The token has been revoked.',
-        'error': 'token_revoked'
-    }, 401
 
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(Store, '/store/<string:name>')
