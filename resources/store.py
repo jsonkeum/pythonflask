@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 from models.store import StoreModel
 
+
 class Store(Resource):
     @jwt_required
     def get(self, name: str):
@@ -30,6 +31,7 @@ class Store(Resource):
             store.delete_from_db()
         
         return {'message': 'Store deleted'}
+
 
 class StoreList(Resource):
     @jwt_required

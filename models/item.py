@@ -2,7 +2,8 @@ from typing import Dict, List, Union
 
 from db import db
 
-ItemJSON = Dict[str, Union(int, str, float)]
+ItemJSON = Dict[str, Union[int, str, float]]
+
 
 class ItemModel(db.Model):
     __tablename__ = 'items'
@@ -12,8 +13,7 @@ class ItemModel(db.Model):
     price = db.Column(db.Float(precision=2))
     
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
- 
-    
+
     def __init__(self, name: str, price: float, store_id: int):
         self.name = name
         self.price = price
@@ -26,8 +26,7 @@ class ItemModel(db.Model):
             'price': self.price,
             'store_id': self.store_id
         }
-    
-    
+
     @classmethod
     def find_by_name(cls, name: str) -> "ItemModel":
         """
@@ -50,7 +49,7 @@ class ItemModel(db.Model):
     def find_all(cls) -> List["ItemModel"]:
         return cls.query.all()
 
-    #previously insert
+    # previously insert
     def save_to_db(self) -> None:
         """
         connection = sqlite3.connect('data.db')

@@ -4,9 +4,10 @@ from db import db
 
 UserJSON = Dict[str, Union[int, str]]
 
+
 class UserModel(db.Model):
-    #db.Model is sql alchemy
-    
+    # db.Model is sql alchemy
+
     # need to declare table and columns
     # of the table that this object is related to
     __tablename__ = 'users'
