@@ -24,6 +24,7 @@ class Item(Resource):
         help='Every item needs a store id.'
     )
     
+    # name here is a keyword argument that is tied to the query param described in app.py [ api.add_resource(Item, '/item/<string:name>') ]
     def get(self, name):
         item = ItemModel.find_by_name(name)
         if item:
