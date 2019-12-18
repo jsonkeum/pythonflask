@@ -6,13 +6,13 @@ ItemJSON = Dict[str, Union[int, str, float]]
 
 
 class ItemModel(db.Model):
-    __tablename__ = 'items'
-    
+    __tablename__ = "items"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     price = db.Column(db.Float(precision=2))
-    
-    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"))
 
     def __init__(self, name: str, price: float, store_id: int):
         self.name = name
@@ -21,10 +21,10 @@ class ItemModel(db.Model):
 
     def json(self) -> ItemJSON:
         return {
-            'id': self.id,
-            'name': self.name,
-            'price': self.price,
-            'store_id': self.store_id
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "store_id": self.store_id,
         }
 
     @classmethod
@@ -44,7 +44,7 @@ class ItemModel(db.Model):
             return cls(*row)
         """
         return cls.query.filter_by(name=name).first()
-    
+
     @classmethod
     def find_all(cls) -> List["ItemModel"]:
         return cls.query.all()
@@ -64,7 +64,7 @@ class ItemModel(db.Model):
         # SQLAlchemy handles both updates and inserts
         db.session.add(self)
         db.session.commit()
-    
+
     def delete_from_db(self) -> None:
         db.session.delete(self)
         db.session.commit()
