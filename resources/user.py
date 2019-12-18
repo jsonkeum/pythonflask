@@ -22,7 +22,8 @@ _user_parser.add_argument(
 
 
 class UserRegister(Resource):
-    def post(self):
+    @classmethod
+    def post(cls):
         data = _user_parser.parse_args()
 
         if UserModel.find_by_username(data["username"]):
@@ -79,16 +80,18 @@ class UserLogout(Resource):
 
     # basically blacklisting the old access token so that the user has to
     # login again and get a new token
+    @classmethod
     @jwt_required
-    def post(self):
+    def post(cls):
         jti = get_raw_jwt()["jti"]  # jti is a JWT ID, a unique identifier for a JWT
         BLACKLIST.add(jti)
         return {"message": "Successfully logged out."}, 200
 
 
 class TokenRefresh(Resource):
+    @classmethod
     @jwt_refresh_token_required
-    def post(self):
+    def post(cls):
         # accepts refresh token, gets user id based on that token, then generates new
         # access token but one that is not fresh
         current_user = get_jwt_identity()
