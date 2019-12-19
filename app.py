@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-
+from marshmallow import ValidationError
 import os
 
 from blacklist import BLACKLIST
@@ -24,6 +24,12 @@ app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = ["access", "refresh"]
 
 
 api = Api(app)
+
+
+# Flask can set app level error handlers
+@app.errorhandler(ValidationError)
+def handle_marshmallow_validation(err):
+    return jsonify(err.messages), 400
 
 
 jwt = JWTManager(app)  # doesn't create /auth endpoint
@@ -49,6 +55,7 @@ api.add_resource(TokenRefresh, "/refresh")
 if __name__ == "__main__":
     from configparser import ConfigParser
     from db import db
+    from ma import ma
 
     parser = ConfigParser()
     parser.read("database.ini")
@@ -64,4 +71,5 @@ if __name__ == "__main__":
         raise Exception("DB Settings not found!!!!")
 
     db.init_app(app)
+    ma.init_app(app)
     app.run(port=5000, debug=True)

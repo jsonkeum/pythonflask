@@ -1,16 +1,12 @@
-from typing import Dict, List, Union
-
+from typing import List
 from db import db
-from models.item import ItemJSON
-
-StoreJSON = Dict[str, Union[int, str, List[ItemJSON]]]
 
 
 class StoreModel(db.Model):
     __tablename__ = "stores"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80), unique=True, nullable=False)
 
     # SQLAlchemy looks at ItemModel to see if there is a relationship
     # in this case stores.id and returns all the item objects in
@@ -19,16 +15,6 @@ class StoreModel(db.Model):
     # Item objects but a query builder e.g. self.items.all()
     # trade off between load now once or load later multi times
     items = db.relationship("ItemModel", lazy="dynamic")
-
-    def __init__(self, name: str):
-        self.name = name
-
-    def json(self) -> StoreJSON:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "items": [item.json() for item in self.items.all()],
-        }
 
     @classmethod
     def find_by_name(cls, name: str) -> "StoreModel":
