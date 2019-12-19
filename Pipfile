@@ -15,6 +15,8 @@ Flask-SQLAlchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 marshmallow = "*"
+requests = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"

@@ -9,4 +9,4 @@ class UserSchema(ma.ModelSchema):
         model = UserModel
         # need the comma to make these a tuple
         load_only = ("password",)
-        dump_only = ("id",)
+        dump_only = ("id", "activated")
