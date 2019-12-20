@@ -1,6 +1,6 @@
 import traceback
 
-from flask import request, make_response, render_template
+from flask import request
 from flask_restful import Resource
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
@@ -15,6 +15,7 @@ from flask_jwt_extended import (
 from libs.mailgun import MailGunException
 from schemas.user import UserSchema
 from models.user import UserModel
+from models.confirmation import ConfirmationModel
 from blacklist import BLACKLIST
 
 ACTIVATION_SUCCESSFUL = "User successfully activated!"
@@ -50,6 +51,10 @@ class UserRegister(Resource):
 
         try:
             user.save_to_db()
+
+            confirmation = ConfirmationModel(user.id)
+            confirmation.save_to_db()
+
             user.send_confirmation_email()
             return {"message": SUCCESS_REGISTER_MESSAGE}, 201
         except MailGunException as e:
@@ -57,6 +62,7 @@ class UserRegister(Resource):
             return {"message": str(e)}, 500
         except:
             traceback.print_exc()
+            user.delete_from_db()
             return {"message": FAILED_TO_CREATE}
 
 
@@ -89,7 +95,8 @@ class UserLogin(Resource):
 
         # check password
         if user and safe_str_cmp(user.password, user_data.password):
-            if user.activated:
+            confirmation = user.most_recent_confirmation
+            if confirmation and confirmation.confirmed:
                 # create access token
                 access_token = create_access_token(identity=user.id, fresh=True)
 
@@ -127,23 +134,3 @@ class TokenRefresh(Resource):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
         return {"access_token": new_token}, 200
-
-
-class UserConfirm(Resource):
-    @classmethod
-    def get(cls, user_id: int):
-        user = UserModel.find_by_id(user_id)
-        if user:
-            user.activated = True
-            try:
-                user.save_to_db()
-            except:
-                return {"message": ERROR_UPDATING_USER}, 500
-            # location of the template is assumed to be in the templates folder next to app.py
-            headers = {"Content-Type": "text/html"}
-            return make_response(
-                render_template("confirmation_page.html", email=user.username),
-                200,
-                headers,
-            )
-        return {"message": USER_NOT_FOUND}, 404

@@ -1,7 +1,8 @@
 from flask import request, url_for
-from requests import Response, post
+from requests import Response
 from db import db
 from libs.mailgun import Mailgun
+from models.confirmation import ConfirmationModel
 
 
 class UserModel(db.Model):
@@ -14,7 +15,15 @@ class UserModel(db.Model):
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(80), nullable=False, unique=True)
-    activated = db.Column(db.Boolean, default=False)
+
+    # all, delete-orphan deletes the corresponding confirmation record when user record is deleted
+    confirmation = db.relationship(
+        "ConfirmationModel", lazy="dynamic", cascade="all, delete-orphan"
+    )
+
+    @property
+    def most_recent_confirmation(self) -> "ConfirmationModel":
+        return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
 
     def save_to_db(self) -> None:
         db.session.add(self)
@@ -26,11 +35,13 @@ class UserModel(db.Model):
 
     def send_confirmation_email(self) -> Response:
         # url_root = http://localhost:5000/
-        # userconfirm needs to match UserConfirm resource name registerd in app.py
+        # confirmation needs to match Confirmation resource name registerd in app.py
         # user_id is the query param to be embedded in link
         # link is for the user to click in mailgun email
-        link = request.url_root[0:-1] + url_for("userconfirm", user_id=self.id)
-        subject = "Registration confirmation"
+        link = request.url_root[0:-1] + url_for(
+            "confirmation", confirmation_id=self.most_recent_confirmation.id
+        )
+        subject = "Registration Confirmation"
         text = f"Please click the link to confirm your registration: {link}"
         html = f'<html>Please click the link to confirm your registration: <a href="{link}">{link}</a></html>'
 
